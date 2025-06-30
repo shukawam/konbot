@@ -1,0 +1,77 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+  prometheus:
+    config:
+      scrape_configs:
+        - job_name: kong-gateway
+          scrape_interval: 5s
+          static_configs:
+            - targets:
+                - gateway:8001
+        - job_name: otel-collector
+          scrape_interval: 5s
+          static_configs:
+            - targets:
+                - otel-collector:8888
+        - job_name: prometheus
+          static_configs:
+            - targets:
+                - localhost:9090
+        - job_name: tempo
+          static_configs:
+            - targets:
+                - tempo:3200
+
+processors:
+  batch:
+  # Kong HTTP Logプラグインは、unknown-serviceとしてログを送信するため、サービス名を追加する
+  resource/add-service-name:
+    attributes:
+      - key: service.name
+        value: kong
+        action: upsert
+
+exporters:
+  otlphttp/tempo:
+    endpoint: http://tempo:4318
+    tls:
+      insecure: true
+  debug:
+    verbosity: detailed
+    sampling_initial: 5
+    sampling_thereafter: 200
+  prometheus:
+    endpoint: 0.0.0.0:8889
+  otlphttp/loki:
+    endpoint: http://loki:3100/otlp
+    tls:
+      insecure: true
+
+service:
+  pipelines:
+    traces:
+      receivers:
+        - otlp
+      processors:
+        - batch
+      exporters:
+        - otlphttp/tempo
+    metrics:
+      receivers:
+        - prometheus
+      exporters:
+        - prometheus
+    logs:
+      receivers:
+        - otlp
+      processors:
+        - resource/add-service-name
+        - batch
+      exporters:
+        - debug
+        - otlphttp/loki

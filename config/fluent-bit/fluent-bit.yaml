@@ -1,0 +1,15 @@
+pipeline:
+  inputs:
+    - name: http
+      port: 2020
+      tag: kong-http-log-plugin
+  outputs:
+    - name: opentelemetry
+      host: otel-collector
+      port: 4318
+      logs_uri: /v1/logs
+      log_response_payload: true
+      tls: off
+      logs_body_key: ${message}
+      logs_trace_id_message_key: trace_id
+      logs_span_id_message_key: span_id
