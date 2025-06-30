@@ -35,6 +35,7 @@ curl --request POST \
 Finally, run the following script to start the LLM application.
 
 ```sh
+uv pip install -e .
 streamlit run main.py
 ```
 
