@@ -19,7 +19,7 @@ First, set up Kong Gateway and Redis.
 
 ```sh
 docker compose up -d
-deck gateway sync plugins/ai/kong.yml
+deck gateway sync plugins/ai/kong.yaml
 ```
 
 After that, run the following scripts to set up vector store.
