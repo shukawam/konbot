@@ -163,31 +163,54 @@ plugins:
   #       - ".*Kong.*"
   #     deny_patterns:
   #       - ".*コング.*"
-  - name: ai-semantic-prompt-guard
-    service: chat-service
+  # - name: ai-semantic-prompt-guard
+  #   service: chat-service
+  #   config:
+  #     embeddings:
+  #       auth:
+  #         header_name: Authorization
+  #         header_value: Bearer ${{ env "DECK_OPENAI_API_KEY" }}
+  #       model:
+  #         provider: openai
+  #         name: text-embedding-3-small
+  #     search:
+  #       threshold: 0.5
+  #     vectordb:
+  #       strategy: redis
+  #       distance_metric: cosine
+  #       threshold: 0.7
+  #       dimensions: 1536
+  #       redis:
+  #         host: redis
+  #         port: 6379
+  #     rules:
+  #       allow_prompts:
+  #         - Kong Gatewayに関する質問
+  #         - ゴリラに関する質問
+  #         - ロケットに関する質問
+  #       deny_prompts:
+  #         - 政治に関する質問
+  #         - 野球に関する質問
+  # - name: ai-aws-guardrails
+  #   service: chat-service
+  #   config:
+  #     guardrails_id: ${{ env "DECK_GUARDRAILS_ID" }}
+  #     guardrails_version: '${{ env "DECK_GUARDRAILS_VERSION" }}'
+  #     aws_region: ${{ env "DECK_AWS_REGION" }}
+  #     aws_access_key_id: ${{ env "DECK_AWS_ACCESS_KEY_ID" }}
+  #     aws_secret_access_key: ${{ env "DECK_AWS_SECRET_ACCESS_KEY" }}
+  - name: ai-prompt-compressor
     config:
-      embeddings:
-        auth:
-          header_name: Authorization
-          header_value: Bearer ${{ env "DECK_OPENAI_API_KEY" }}
-        model:
-          provider: openai
-          name: text-embedding-3-small
-      search:
-        threshold: 0.5
-      vectordb:
-        strategy: redis
-        distance_metric: cosine
-        threshold: 0.7
-        dimensions: 1536
-        redis:
-          host: redis
-          port: 6379
-      rules:
-        allow_prompts:
-          - Kong Gatewayに関する質問
-          - ゴリラに関する質問
-          - ロケットに関する質問
-        deny_prompts:
-          - 政治に関する質問
-          - 野球に関する質問
+      compressor_type: rate
+      compressor_url: http://compressor:8080
+      keepalive_timeout: 60000
+      log_text_data: false
+      stop_on_error: true
+      timeout: 10000
+      compression_ranges:
+        - min_tokens: 20
+          max_tokens: 100
+          value: 0.8
+        - min_tokens: 100
+          max_tokens: 1000000
+          value: 0.3
