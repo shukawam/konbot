@@ -78,6 +78,16 @@ services:
     ports:
       - 6379:6379
 
+  # --- AI Compress Service
+  compressor:
+    <<: *default
+    image: kong/ai-compress-service:v0.0.2
+    container_name: compressor
+    ports:
+      - 8080
+    environment:
+      LLMLINGUA_DEVICE_MAP: cpu
+
   # --- Tempo ---
   tempo-init:
     <<: *default
