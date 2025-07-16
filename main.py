@@ -36,24 +36,18 @@ st.caption(
     Kong に関する何かを聞くとゴリラっぽく答えてくれます。
     """
 )
-# Initialize chat history
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# Display chat messages from history on app rerun
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-# React to user input
-if prompt := st.chat_input("どうしましたか？"):
-    # Add user message to chat history
+if prompt := st.chat_input("どうしましたか 🦍？"):
     st.session_state.messages.append({"role": "user", "content": prompt})
-    # Display user message in chat message container
     with st.chat_message("user"):
         st.markdown(prompt)
 
-    # Display assistant response in chat message container
     with st.chat_message("assistant"):
         message_placeholder = st.empty()
         full_response = ""
@@ -76,5 +70,4 @@ if prompt := st.chat_input("どうしましたか？"):
             st.error(f"An error occurred: {e}")
             full_response = "ウホッ！エラーが発生したゴリ..."
             message_placeholder.markdown(full_response)
-    # Add assistant response to chat history
     st.session_state.messages.append({"role": "assistant", "content": full_response})
