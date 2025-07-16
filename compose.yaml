@@ -30,7 +30,7 @@ services:
       retries: 3
   migrations:
     <<: *default
-    image: &kong-gateway-image kong/kong-gateway:3.10.0.1
+    image: &kong-gateway-image kong/kong-gateway:3.11
     container_name: migrations
     depends_on:
       - database
