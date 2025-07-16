@@ -12,7 +12,8 @@ receivers:
           scrape_interval: 5s
           static_configs:
             - targets:
-                - gateway:8001
+                - gateway:8001 # for Control Plane
+                - gateway:8007 # for Data Plane
         - job_name: otel-collector
           scrape_interval: 5s
           static_configs:
@@ -73,5 +74,4 @@ service:
         - resource/add-service-name
         - batch
       exporters:
-        - debug
         - otlphttp/loki
