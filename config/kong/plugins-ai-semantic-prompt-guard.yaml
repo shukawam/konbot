@@ -1,0 +1,32 @@
+_format_version: "3.0"
+_transform: true
+
+plugins:
+  - name: ai-semantic-prompt-guard
+    service: chat-service
+    config:
+      embeddings:
+        auth:
+          header_name: Authorization
+          header_value: Bearer ${{ env "DECK_OPENAI_API_KEY" }}
+        model:
+          provider: openai
+          name: text-embedding-3-small
+      search:
+        threshold: 0.5
+      vectordb:
+        strategy: redis
+        distance_metric: cosine
+        threshold: 0.7
+        dimensions: 1536
+        redis:
+          host: redis
+          port: 6379
+      rules:
+        allow_prompts:
+          - Kong Gatewayに関する質問
+          - ゴリラに関する質問
+          - ロケットに関する質問
+        deny_prompts:
+          - 政治に関する質問
+          - 野球に関する質問

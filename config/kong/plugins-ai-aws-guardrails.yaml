@@ -1,0 +1,12 @@
+_format_version: "3.0"
+_transform: true
+
+plugins:
+  - name: ai-aws-guardrails
+    service: chat-service
+    config:
+      guardrails_id: ${{ env "DECK_GUARDRAILS_ID" }}
+      guardrails_version: '${{ env "DECK_GUARDRAILS_VERSION" }}'
+      aws_region: ${{ env "DECK_AWS_REGION" }}
+      aws_access_key_id: ${{ env "DECK_AWS_ACCESS_KEY_ID" }}
+      aws_secret_access_key: ${{ env "DECK_AWS_SECRET_ACCESS_KEY" }}

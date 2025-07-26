@@ -1,0 +1,11 @@
+_format_version: "3.0"
+_transform: true
+
+plugins:
+  - name: ai-prompt-guard
+    service: chat-service
+    config:
+      allow_patterns:
+        - ".*Kong.*"
+      deny_patterns:
+        - ".*コング.*"
