@@ -1,5 +1,9 @@
+import os
 import streamlit as st
 from openai import OpenAI
+
+GATEWAY_ENDPOINT = os.getenv("GATEWAY_ENDPOINT", "http://localhost:8000")
+print(f"{GATEWAY_ENDPOINT=}")
 
 with st.sidebar.container():
     with st.sidebar:
@@ -26,7 +30,9 @@ with st.sidebar.container():
         )
 
 client = OpenAI(
-    api_key="use-kong-gateway-settings", base_url="http://localhost:8000/chat"
+    # Kong GatewayでAPIキーを差し込むためここでは、ダミーの値でOK
+    api_key="use-kong-gateway-settings",
+    base_url=f"{GATEWAY_ENDPOINT}/chat"
 )
 
 st.title("Kong Bot 🦍")
@@ -68,6 +74,6 @@ if prompt := st.chat_input("どうしましたか 🦍？"):
             message_placeholder.markdown(full_response)
         except Exception as e:
             st.error(f"An error occurred: {e}")
-            full_response = "ウホッ！エラーが発生したゴリ..."
+            full_response = f"ウホッ！エラーが発生したゴリ...{GATEWAY_ENDPOINT=}"
             message_placeholder.markdown(full_response)
     st.session_state.messages.append({"role": "assistant", "content": full_response})
