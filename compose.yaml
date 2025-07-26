@@ -12,6 +12,25 @@ networks:
   kong-network:
 
 services:
+  # --- LLM Application ---
+  app:
+    <<: *default
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    container_name: app
+    ports:
+      - 8501:8501
+    environment:
+      GATEWAY_ENDPOINT: http://gateway:8000
+    develop:
+      watch:
+        - action: sync
+          path: ./app/
+          target: /app
+        - action: rebuild
+          path: ./app/
+
   # --- Kong Gateway ---
   database:
     <<: *default
@@ -45,14 +64,9 @@ services:
       - migrations
     ports:
       - 8000:8000
-      - 8443:8443
       - 8001:8001
-      - 8444:8444
       - 8002:8002
-      - 8445:8445
-      - 8003:8003
-      - 8004:8004
-      - 8007:8007
+      - 8100:8100
     environment:
       <<: *kong-env
       KONG_ADMIN_LISTEN: 0.0.0.0:8001
@@ -63,12 +77,32 @@ services:
       KONG_TRACING_INSTRUMENTATIONS: all
       KONG_TRACING_SAMPLING_RATE: 1.0
       # Enable Status API for Data Plane
-      KONG_STATUS_LISTEN: 0.0.0.0:8007
+      KONG_STATUS_LISTEN: 0.0.0.0:8100
       # Logging settings
       KONG_PROXY_ACCESS_LOG: /dev/stdout
       KONG_ADMIN_ACCESS_LOG: /dev/stdout
       KONG_PROXY_ERROR_LOG: /dev/stderr
       KONG_ADMIN_ERROR_LOG: /dev/stderr
+    healthcheck:
+      test:
+        ["CMD-SHELL", "curl -f http://localhost:8100/status/ready || exit 1"]
+      interval: 5s
+      timeout: 30s
+      retries: 5
+      start_period: 20s
+  deck:
+    <<: *default
+    image: kong/deck:v1.49.0
+    working_dir: /files
+    container_name: deck
+    command:
+      ["gateway", "sync", "--kong-addr", "http://gateway:8001", "basic.yaml"]
+    environment:
+      DECK_OPENAI_API_KEY: ${DECK_OPENAI_API_KEY:-}
+    volumes:
+      - ./config/kong/basic.yaml:/files/basic.yaml
+    depends_on:
+      - gateway
 
   # --- Redis ---
   redis:
