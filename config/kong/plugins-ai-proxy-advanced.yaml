@@ -1,0 +1,36 @@
+_format_version: "3.0"
+_transform: true
+
+plugins:
+  - name: ai-proxy-advanced
+    service: chat-service
+    config:
+      targets:
+        - route_type: llm/v1/chat
+          auth:
+            header_name: Authorization
+            header_value: Bearer ${{ env "DECK_OPENAI_API_KEY" }}
+          logging:
+            log_payloads: true
+            log_statistics: true
+          model:
+            provider: openai
+            name: gpt-4o-mini
+            options:
+              temperature: 1.0
+              max_tokens: 4096
+              input_cost: 0.15
+              output_cost: 0.6
+        - route_type: llm/v1/chat
+          auth:
+            header_name: Authorization
+            header_value: Bearer ${{ env "DECK_COHERE_API_KEY" }}
+          model:
+            provider: cohere
+            name: command-a-03-2025
+            options:
+              temperature: 1.0
+              max_tokens: 1024
+              input_cost: 2.5
+              output_cost: 10.0
+
