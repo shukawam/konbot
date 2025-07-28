@@ -5,7 +5,5 @@ plugins:
   - name: ai-prompt-guard
     service: chat-service
     config:
-      allow_patterns:
-        - ".*Kong.*"
       deny_patterns:
-        - ".*コング.*"
+        - ".*バナナ.*"
