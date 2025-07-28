@@ -9,7 +9,7 @@ with st.sidebar.container():
     with st.sidebar:
         model_name = st.sidebar.selectbox(
             label="Model Name",
-            options=["gpt-4o-mini", "o4-mini", "gpt-4.1"],
+            options=["gpt-4o-mini", "command-a-03-2025"],
             help="使用するモデルの名前（実際には、Kong Gatewayにて統一的なポリシーが設定されているため、設定が反映されることはありません。）",
         )
         max_tokens = st.sidebar.slider(
@@ -59,7 +59,7 @@ if prompt := st.chat_input("どうしましたか 🦍？"):
         full_response = ""
         try:
             stream = client.chat.completions.create(
-                model="gpt-4o-mini",
+                model=model_name,
                 messages=[
                     {"role": m["role"], "content": m["content"]}
                     for m in st.session_state.messages
@@ -74,6 +74,6 @@ if prompt := st.chat_input("どうしましたか 🦍？"):
             message_placeholder.markdown(full_response)
         except Exception as e:
             st.error(f"An error occurred: {e}")
-            full_response = f"ウホッ！エラーが発生したゴリ...{GATEWAY_ENDPOINT=}"
+            full_response = f"ウホッ！エラーが発生したゴリ..."
             message_placeholder.markdown(full_response)
     st.session_state.messages.append({"role": "assistant", "content": full_response})
