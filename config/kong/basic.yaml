@@ -10,7 +10,7 @@ services:
       - name: llm-route
         paths:
           - /chat
-        strip_path: true
+        strip_path: false
 
 plugins:
   ################
@@ -23,6 +23,9 @@ plugins:
       auth:
         header_name: Authorization
         header_value: Bearer ${{ env "DECK_OPENAI_API_KEY" }}
+      logging:
+        log_payloads: true
+        log_statistics: true
       model:
         provider: openai
         name: gpt-4o-mini
