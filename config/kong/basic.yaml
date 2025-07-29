@@ -71,8 +71,6 @@ plugins:
     config:
       traces_endpoint: http://otel-collector:4318/v1/traces
       logs_endpoint: http://otel-collector:4318/v1/logs
-      resource_attributes:
-        service.name: kong-otel-plugin
   - name: http-log
     config:
       http_endpoint: http://fluent-bit:2020
