@@ -25,5 +25,6 @@ plugins:
       rules:
         allow_prompts:
           - テクノロジーに関する質問
+          - 技術に関する質問
         deny_prompts:
           - バナナに関する質問
