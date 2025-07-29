@@ -2,9 +2,6 @@ import os
 import streamlit as st
 from openai import OpenAI
 
-GATEWAY_ENDPOINT = os.getenv("GATEWAY_ENDPOINT", "http://localhost:8000")
-print(f"{GATEWAY_ENDPOINT=}")
-
 with st.sidebar.container():
     with st.sidebar:
         model_name = st.sidebar.selectbox(
@@ -29,12 +26,6 @@ with st.sidebar.container():
             help="モデルの出力のランダム性（実際には、Kong Gatewayにて統一的なポリシーが設定されているため、設定が反映されることはありません。）",
         )
 
-client = OpenAI(
-    # Kong GatewayでAPIキーを差し込むためここでは、ダミーの値でOK
-    api_key="use-kong-gateway-settings",
-    base_url=f"{GATEWAY_ENDPOINT}/chat"
-)
-
 st.title("Kong Bot 🦍")
 st.caption(
     """
@@ -58,6 +49,13 @@ if prompt := st.chat_input("どうしましたか 🦍？"):
         message_placeholder = st.empty()
         full_response = ""
         try:
+            GATEWAY_ENDPOINT = os.getenv("GATEWAY_ENDPOINT", "http://localhost:8000")
+            print(f"{GATEWAY_ENDPOINT=}")
+            client = OpenAI(
+                # Kong GatewayでAPIキーを差し込むためここでは、ダミーの値でOK
+                api_key="use-kong-gateway-settings",
+                base_url=f"{GATEWAY_ENDPOINT}/chat"
+            )
             stream = client.chat.completions.create(
                 model=model_name,
                 messages=[
