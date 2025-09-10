@@ -5,6 +5,7 @@ plugins:
   - name: ai-rate-limiting-advanced
     consumer: free
     config:
+      identifier: consumer
       llm_providers:
         - name: openai
           limit:
@@ -19,6 +20,7 @@ plugins:
   - name: ai-rate-limiting-advanced
     consumer: paid
     config:
+      identifier: consumer
       llm_providers:
         - name: openai
           limit:
