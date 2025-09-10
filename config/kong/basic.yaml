@@ -12,6 +12,14 @@ services:
           - /chat
         strip_path: false
 
+consumers:
+  - username: free
+    keyauth_credentials:
+      - key: free-key
+  - username: paid
+    keyauth_credentials:
+      - key: paid-key
+
 plugins:
   ################
   # AI Gateway
@@ -91,3 +99,12 @@ plugins:
       upstream_health_metrics: true
       # wasm_metrics: true
 
+  ################
+  # Security
+  ################
+  - name: key-auth
+    service: chat-service
+    config:
+      key_names:
+        - apikey
+      hide_credentials: true
