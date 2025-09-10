@@ -3,7 +3,7 @@ _transform: true
 
 plugins:
   - name: ai-rate-limiting-advanced
-    service: chat-service
+    consumer: free
     config:
       llm_providers:
         - name: openai
@@ -12,7 +12,21 @@ plugins:
           window_size:
             - 60
       strategy: redis
-      sync_rate: 0.1
+      sync_rate: 0
+      redis:
+        host: redis
+        port: 6379
+  - name: ai-rate-limiting-advanced
+    consumer: paid
+    config:
+      llm_providers:
+        - name: openai
+          limit:
+            - 4000
+          window_size:
+            - 60
+      strategy: redis
+      sync_rate: 0
       redis:
         host: redis
         port: 6379
