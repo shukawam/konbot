@@ -2,8 +2,22 @@ import os
 import streamlit as st
 from openai import OpenAI
 
+plans = {
+    "free": {
+        "apikey": os.getenv("FREE_API_KEY", "free-key"),
+    },
+    "paid": {
+        "apikey": os.getenv("PAID_API_KEY", "paid-key"),
+    }
+}
+
 with st.sidebar.container():
     with st.sidebar:
+        plan = st.sidebar.selectbox(
+            label="Plan",
+            options=["free", "paid"],
+            help="使用するプラン(レート制限が異なります。free: 100tpm, paid: 4,000tpm)",
+        )
         model_name = st.sidebar.selectbox(
             label="Model Name",
             options=["gpt-4o-mini", "command-a-03-2025"],
@@ -51,10 +65,18 @@ if prompt := st.chat_input("どうしましたか 🦍？"):
         try:
             GATEWAY_ENDPOINT = os.getenv("GATEWAY_ENDPOINT", "http://localhost:8000")
             print(f"{GATEWAY_ENDPOINT=}")
+            if plan == "free":
+                apikey = plans["free"]["apikey"]
+            if plan == "paid":
+                apikey = plans["paid"]["apikey"]
+            print(f"{apikey=}")
             client = OpenAI(
                 # Kong GatewayでAPIキーを差し込むためここでは、ダミーの値でOK
                 api_key="use-kong-gateway-settings",
-                base_url=f"{GATEWAY_ENDPOINT}/chat"
+                base_url=f"{GATEWAY_ENDPOINT}/chat",
+                default_headers={
+                    "apikey": apikey,
+                }
             )
             stream = client.chat.completions.create(
                 model=model_name,
