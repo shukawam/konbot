@@ -14,7 +14,9 @@ plans = {
 }
 
 
-def update_model_name():
+
+def update_model_name() -> None:
+    """プランに応じて利用モデルを変更するイベントハンドラ"""
     selected_plan = st.session_state.plan_key
     st.session_state.model_name = plans[selected_plan]["model_name"]
 

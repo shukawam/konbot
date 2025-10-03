@@ -2,21 +2,27 @@ _format_version: "3.0"
 _transform: true
 
 plugins:
-- name: ai-semantic-cache
-  service: chat-service
-  config:
-    embeddings:
-      auth:
-        header_name: Authorization
-        header_value: Bearer ${{ env "DECK_OPENAI_API_KEY" }}
-      model:
-        provider: openai
-        name: text-embedding-3-small
-    vectordb:
-      dimensions: 1536
-      distance_metric: cosine
-      strategy: redis
-      threshold: 0.1
-      redis:
-        host: redis
-        port: 6379
+  - name: ai-semantic-cache
+    service: chat-service
+    # FIXME: AI Semantic CacheプラグインがOpenAIフォーマットでしか受け入れられないため、
+    # AI ProxyでOpenAI以外のプロバイダー（e.g. Cohere）を使用している場合は、プラグインの実行順を変更する必要がある
+    ordering:
+      before:
+        access:
+          - ai-proxy
+    config:
+      embeddings:
+        auth:
+          header_name: Authorization
+          header_value: Bearer ${{ env "DECK_OPENAI_API_KEY" }}
+        model:
+          provider: openai
+          name: text-embedding-3-small
+      vectordb:
+        dimensions: 1536
+        distance_metric: cosine
+        strategy: redis
+        threshold: 0.1
+        redis:
+          host: redis
+          port: 6379

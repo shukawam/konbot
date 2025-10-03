@@ -7,7 +7,7 @@ plugins:
     config:
       identifier: consumer
       llm_providers:
-        - name: openai
+        - name: cohere
           limit:
             - 100
           window_size:
@@ -23,6 +23,11 @@ plugins:
       identifier: consumer
       llm_providers:
         - name: openai
+          limit:
+            - 4000
+          window_size:
+            - 60
+        - name: cohere
           limit:
             - 4000
           window_size:

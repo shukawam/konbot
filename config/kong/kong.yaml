@@ -7,10 +7,14 @@ services:
     port: 80
     protocol: http
     routes:
-      - name: llm-route
+      - name: llm-route-openai
         paths:
-          - /chat
-        strip_path: false
+          - ~/openai/(?<model>[^#?/]+)/chat/completions$
+        strip_path: true
+      - name: llm-route-cohere
+        paths:
+          - ~/cohere/(?<model>[^#?/]+)/chat/completions$
+        strip_path: true
 
 consumers:
   - username: free
@@ -25,7 +29,7 @@ plugins:
   # AI Gateway
   ################
   - name: ai-proxy
-    service: chat-service
+    route: llm-route-openai
     config:
       route_type: llm/v1/chat
       auth:
@@ -36,10 +40,30 @@ plugins:
         log_statistics: true
       model:
         provider: openai
-        name: gpt-4o-mini
+        name: $(uri_captures.model)
         options:
           input_cost: 0.15
           output_cost: 0.6
+          max_tokens: 1024
+          temperature: 0
+          top_k: 100
+          top_p: 0
+  - name: ai-proxy
+    route: llm-route-cohere
+    config:
+      route_type: llm/v1/chat
+      auth:
+        header_name: Authorization
+        header_value: Bearer ${{ env "DECK_COHERE_API_KEY" }}
+      logging:
+        log_payloads: true
+        log_statistics: true
+      model:
+        provider: cohere
+        name: $(uri_captures.model)
+        options:
+          input_cost: 2.5
+          output_cost: 10.0
           max_tokens: 1024
           temperature: 0
           top_k: 100
